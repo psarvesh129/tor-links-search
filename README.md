@@ -7,10 +7,7 @@ Tor Links Search is a simple web application that allows users to search for .on
 - Dynamically populated dropdown for keywords
 - Displays search results with working Tor links
 - Built with HTML, CSS, JavaScript, and Bootstrap for responsive design
-
-## Screenshot
-![Tor Links Search](pngegg.png)
-
+- 
 ## How to Use
 1. Clone this repository.
 2. Open `index.html` in your browser.
