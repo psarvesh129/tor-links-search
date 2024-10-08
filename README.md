@@ -1,4 +1,4 @@
-[# Tor Links Search
+# Tor Links Search
 
 Tor Links Search is a simple web application that allows users to search for .onion links based on keywords. It uses a dataset of Tor links and dynamically filters them based on the selected keyword. The project is designed for cybersecurity research and provides an intuitive interface for browsing hidden services.
 
@@ -22,4 +22,4 @@ This project is for educational purposes and personal learning. It is not a tool
 ## License
 This project is licensed under the [GNU General Public License v3.0](LICENSE).
 
-](https://psarvesh129.github.io/tor-links-search/)
+# (https://psarvesh129.github.io/tor-links-search/)
