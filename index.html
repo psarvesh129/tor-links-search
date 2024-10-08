@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tor Links Search</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <style>
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: 'Arial', sans-serif;
+            overflow-x: hidden;
+        }
+        .sidebar {
+            height: 100vh;
+            background: #1e1e1e;
+            padding: 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
+            transition: width 0.3s;
+        }
+        .sidebar h2 {
+            text-align: center;
+            color: #007bff;
+        }
+        .sidebar a {
+            color: #ffffff;
+            text-decoration: none;
+            display: block;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+        .sidebar a:hover {
+            background: #007bff;
+        }
+        .content {
+            margin-left: 270px;
+            padding: 20px;
+        }
+        .header-logo {
+            width: 100px; /* Adjust width as necessary */
+            margin-bottom: 20px;
+        }
+        .result-card {
+            margin-bottom: 15px;
+            padding: 15px;
+            background: #1f1f1f;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .result-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+        .alert {
+            margin-top: 15px;
+        }
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 0.9em;
+            color: #b0b0b0;
+        }
+        .spinner-border {
+            display: none;
+        }
+        .search-input {
+            transition: width 0.4s;
+            border-radius: 25px;
+        }
+        .search-input:focus {
+            width: 100%;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+        .keyword-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .keyword-container select, .keyword-container input {
+            width: 48%;
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100px;
+            }
+            .sidebar a {
+                font-size: 0.8em;
+            }
+            .content {
+                margin-left: 120px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2 class="text-center">Tor Links</h2>
+        <a href="#home">Home</a>
+        <a href="#search">Search</a>
+        <a href="https://www.linkedin.com/in/sarvesh-mahendra-patil-b9724118b?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app">About</a>
+        <a href="https://github.com/psarvesh129">Contact</a>
+    </div>
+    <div class="content">
+        <img src="pngegg.png" alt="Tor Logo" class="header-logo">
+        <h1 class="text-center mb-4">Search Tor Links</h1>
+        <div class="keyword-container mb-3">
+            <select id="keywordDropdown" class="form-control">
+                <option value="">Select a keyword</option>
+                <!-- Keywords will be dynamically populated here -->
+            </select>
+            <input type="text" id="searchInput" class="form-control search-input" placeholder="Type a keyword" aria-label="Type a keyword">
+        </div>
+        <button id="searchButton" class="btn btn-primary btn-block"><i class="fas fa-search"></i> Search</button>
+        <div class="spinner-border text-primary" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+        <div id="results" class="mt-4"></div>
+    </div>
+
+    <footer class="footer">
+        <p>&copy; 2024 Tor Links Search. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        let data = [];
+
+        // Fetch JSON data
+        fetch('data.json')
+            .then(response => response.json())
+            .then(json => {
+                data = json;
+                const keywords = [...new Set(data.map(item => item.keyword))];  // Get unique keywords
+                const dropdown = document.getElementById('keywordDropdown');
+                keywords.forEach(keyword => {
+                    const option = document.createElement('option');
+                    option.value = keyword;
+                    option.textContent = keyword;
+                    dropdown.appendChild(option);
+                });
+            })
+            .catch(error => {
+                console.error('Error loading data:', error);
+            });
+
+        document.getElementById('searchButton').addEventListener('click', function() {
+            const keywordDropdown = document.getElementById('keywordDropdown').value;
+            const keywordInput = document.getElementById('searchInput').value.trim();
+            const resultsDiv = document.getElementById('results');
+            const spinner = document.querySelector('.spinner-border');
+
+            resultsDiv.innerHTML = '';  // Clear previous results
+            spinner.style.display = 'block'; // Show loading spinner
+
+            const keyword = keywordInput || keywordDropdown;
+
+            if (!keyword) {
+                resultsDiv.innerHTML = '<div class="alert alert-warning"><i class="fas fa-exclamation-circle"></i> Please select or enter a keyword.</div>';
+                spinner.style.display = 'none';
+                return;
+            }
+
+            const filteredLinks = data.filter(item => item.keyword.toLowerCase() === keyword.toLowerCase());
+            if (filteredLinks.length === 0) {
+                resultsDiv.innerHTML = '<div class="alert alert-warning"><i class="fas fa-exclamation-circle"></i> No results found.</div>';
+            } else {
+                filteredLinks.forEach(link => {
+                    resultsDiv.innerHTML += `
+                    <div class="result-card">
+                        <a href="${link.url}" target="_blank" class="text-decoration-none">${link.url}</a>
+                    </div>`;
+                });
+            }
+            spinner.style.display = 'none'; // Hide loading spinner
+        });
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
